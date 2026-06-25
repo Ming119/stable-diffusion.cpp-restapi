@@ -138,21 +138,21 @@ if(POLICY CMP0169)
     cmake_policy(SET CMP0169 OLD)
 endif()
 
-# cpp-httplib v0.36.0 (header-only HTTP library with WebSocket support)
+# cpp-httplib v0.48.0 (header-only HTTP library with WebSocket support)
 # We fetch content but DON'T use MakeAvailable/httplib::httplib target because
 # sd.cpp's thirdparty bundles an older httplib without WebSocket support, and CMake's
 # include path deduplication causes the old version to take priority.
 # Instead, we add the include path manually with BEFORE to ensure correct version.
 #
-# PATCH: cpp-httplib v0.36.0 rejects unknown HTTP methods at parse_request_line()
-# (httplib.h ~line 10717 has a closed allow-list of GET/HEAD/POST/PUT/DELETE/CONNECT/
+# PATCH: cpp-httplib v0.48.0 rejects unknown HTTP methods at parse_request_line()
+# (httplib.h ~line 11374 has a closed allow-list of GET/HEAD/POST/PUT/DELETE/CONNECT/
 # OPTIONS/TRACE/PATCH/PRI). For WebDAV we need PROPFIND/MKCOL/MOVE/COPY/LOCK/UNLOCK
 # to reach our pre-routing handler. The patch_command appends those to the set.
 # This is idempotent — re-running CMake on an already-patched tree is a no-op.
 FetchContent_Declare(
     httplib
     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-    GIT_TAG        v0.36.0
+    GIT_TAG        v0.48.0
     GIT_SHALLOW    TRUE
     PATCH_COMMAND  ${CMAKE_COMMAND} -DHTTPLIB_HEADER=<SOURCE_DIR>/httplib.h
                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchHttplibWebDAV.cmake
@@ -427,7 +427,7 @@ target_include_directories(sdcpp-restapi SYSTEM PRIVATE
     ${stable-diffusion_SOURCE_DIR}/thirdparty
 )
 
-# Ensure our httplib v0.36.0 (with WebSocket support) takes priority over
+# Ensure our httplib v0.48.0 (with WebSocket support) takes priority over
 # stable-diffusion.cpp's bundled httplib v0.28.0 (without WebSocket).
 # sd.cpp's thirdparty/ propagates an old httplib.h via PUBLIC includes.
 # httplib::httplib adds its path as -isystem, which CMake deduplicates against -I.
